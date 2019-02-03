@@ -1,4 +1,5 @@
 # myrepo
-just my repo
-HI I m iQBAL
-i m just practicing github
+Just my repo.
+Hi I am github.
+I am just practicing github.
+These are test commits.
