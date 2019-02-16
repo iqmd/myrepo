@@ -10,6 +10,7 @@
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
+set $term xfce4-terminal 
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -30,7 +31,7 @@ font pango:DejaVu Sans Mono 8
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec xfce4-terminal
+bindsym $mod+Return exec $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -171,7 +172,6 @@ bindsym $mod+r mode "resize"
 
 #Wallpaper
 
-exec_always --no-startup-id feh --bg-fill Pictures/Backgrounds/wall.jpg
 
 #Polybar
 
@@ -179,8 +179,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 #Xresources
 
-exec --no-startup-id xrdb ~/.Xresources
-
+exec_always --no-startup-id xrdb -merge ~/.Xresources
 #nm-applet
 
 exec --no-startup-id nm-applet
@@ -191,7 +190,7 @@ gaps inner 10
 
 #Borders
 
-default_border pixel 0
+default_border pixel 1
 default_floating_border pixel 0
 
 #Screen Configuration
@@ -222,10 +221,34 @@ bindsym $mod+Shift+x exec "i3-nagbar -f Hack:style=Bold -t warning -m 'Choose wh
 
 
 #Batteryicon
-exec --no-startup-id cbatticon -c "poweroff" -l 15 -r 3
+#exec --no-startup-id cbatticon -c "poweroff" -l 15 -r 3
 #Firefox
 bindsym $mod+Shift+f exec --no-startup-id firefox
 assign [class="Firefox"] $ws2
 #Ranger
-bindsym $mod+Shift+Return exec xfce4-terminal -e ranger
+bindsym $mod+Shift+Return exec $term  ranger
+ 
+ 
+ 
 
+###--- i3 coloring ---###
+# Make it clear when failed using red - otherwise set i3 colors with wal from xresources
+set_from_resource $bg           i3wm.color0 #ff0000
+set_from_resource $bg-alt       i3wm.color14 #ff0000
+set_from_resource $fg           i3wm.color15 #ff0000
+set_from_resource $fg-alt       i3wm.color2 #ff0000
+set_from_resource $hl           i3wm.color13 #ff0000
+
+# class                 border      backgr. text indicator      child_border
+client.focused          $fg-alt     $bg     $hl  $fg-alt        $hl
+client.focused_inactive $fg-alt     $bg     $fg  $fg-alt        $fg-alt
+client.unfocused        $fg-alt     $bg     $fg  $fg-alt        $fg-alt
+client.urgent           $fg-alt     $bg     $fg  $fg-alt        $fg-alt
+client.placeholder      $fg-alt     $bg     $fg  $fg-alt        $fg-alt
+
+client.background       $bg
+
+#Pywal
+exec --no-startup-id wal -R
+exec_always --no-startup-id wal -i ~/Pictures/Backgrounds/wall.jpg -n
+exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")" 
