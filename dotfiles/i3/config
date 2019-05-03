@@ -186,7 +186,7 @@ exec --no-startup-id nm-applet
 
 #Gaps
 
-gaps inner 10 
+gaps inner 15 
 
 #Borders
 
@@ -198,7 +198,7 @@ default_floating_border pixel 0
 #Brightness
 bindsym XF86MonBrightnessDown	exec --no-startup-id light -U 5
 bindsym XF86MonBrightnessUp	exec --no-startup-id light -A 5
-exec_always --no-startup-id xrandr --output eDP-1 --gamma 0.8:0.8:0.8
+exec_always --no-startup-id xrandr --output eDP-1 --gamma 0.7:0.8:0.8
 
 #Compton 
 
@@ -221,12 +221,11 @@ bindsym $mod+Shift+x exec "i3-nagbar -f Hack:style=Bold -t warning -m 'Choose wh
 
 
 #Batteryicon
-#exec --no-startup-id cbatticon -c "poweroff" -l 15 -r 3
+exec --no-startup-id cbatticon -c "poweroff" -l 15 -r 3
 #Firefox
 bindsym $mod+Shift+f exec --no-startup-id firefox
-assign [class="Firefox"] $ws2
 #Ranger
-bindsym $mod+Shift+Return exec $term  ranger
+bindsym $mod+Shift+Return exec $term -e  ranger
  
  
  
@@ -234,9 +233,9 @@ bindsym $mod+Shift+Return exec $term  ranger
 ###--- i3 coloring ---###
 # Make it clear when failed using red - otherwise set i3 colors with wal from xresources
 set_from_resource $bg           i3wm.color0 #ff0000
-set_from_resource $bg-alt       i3wm.color14 #ff0000
-set_from_resource $fg           i3wm.color15 #ff0000
-set_from_resource $fg-alt       i3wm.color2 #ff0000
+set_from_resource $bg-alt       i3wm.color14 #000000
+set_from_resource $fg           i3wm.color15 #ffffff
+set_from_resource $fg-alt       i3wm.color2 #ffffff
 set_from_resource $hl           i3wm.color13 #ff0000
 
 # class                 border      backgr. text indicator      child_border
@@ -249,6 +248,7 @@ client.placeholder      $fg-alt     $bg     $fg  $fg-alt        $fg-alt
 client.background       $bg
 
 #Pywal
-exec --no-startup-id wal -R
-exec_always --no-startup-id wal -i ~/Pictures/Backgrounds/wall.jpg -n
-exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")" 
+#exec --no-startup-id wal -R
+#exec_always --no-startup-id wal -i ~/Pictures/Backgrounds/wall.jpg -n
+#exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")" 
+exec_always --no-startup-id feh --bg-fill ~/Pictures/Backgrounds/wall.jpg
