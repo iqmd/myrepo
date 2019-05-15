@@ -1,0 +1,39 @@
+lsusb : what are the things connected to the computer 
+
+#Port forwarding with serveo.net
+------------------------------------------------------------
+ssh -R magis:80:localhost:9000 serveo.net
+
+#Managing network Interfaces
+------------------------------------------------------------
+sudo iw dev wlan0_ap interface add wlo1 type managed
+
+#To delete interface wlo1
+------------------------------------------------------------
+iw wlo1 del
+
+#How to update Github
+------------------------------------------------------------
+1.First update or pull the remote repository
+
+git pull repo-url
+
+2.Change whatever the changes has to be done ,then
+
+git status
+
+3.Then add the changes 
+ git add -A , git add .
+
+4.Then commit
+
+git commit -m "Give name for commit"
+
+5.Then push the changes to remote repository
+
+git push , git push origin master
+
+#sudo
+------------------------------------------------------------
+To give the pasword in one command line only
+echo <password> | sudo -S <program name>
