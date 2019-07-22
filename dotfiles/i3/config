@@ -10,7 +10,7 @@
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
-set $term xfce4-terminal 
+set $term kitty 
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -215,9 +215,17 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pulsemixer --change-volume +5
 exec_always --no-startup-id xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1
 
 #Lockscreen
-bindsym $mod+x exec --no-startup-id i3lock -e -f && systemctl suspend
+#bindsym $mod+x exec --no-startup-id i3lock -e -f && systemctl suspend
+
+#To lock screen with photo at that instance
+
+#bindsym $mod+x exec --no-startup-id scrot -q 50  /home/iqbal/.cache/i3lock/current/l_blur.png  && convert /home/iqbal/.cache/i3lock/current/l_blur.png -blur 0x4 /home/iqbal/.cache/i3lock/current/l_blur.png && betterlockscreen --text "Password :" -s blur
+
+#exec_always --no-startup-id betterlockscreen -u /home/iqbal/Pictures/Backgrounds/wall.jpg
+bindsym $mod+x exec --no-startup-id betterlockscreen --text "Password: " -s blur
+
 #Poweroff
-bindsym $mod+Shift+x exec "i3-nagbar -f Hack:style=Bold -t warning -m 'Choose what to do ?' -B 'Shutdown' 'poweroff' -B 'Lock & Suspend' 'i3lock -e -f  && systemctl suspend' -B 'Log Out' 'i3-msg exit' "
+bindsym $mod+Shift+x exec "i3-nagbar -f Hack:style=Bold -t warning -m 'Choose what to do ?' -B 'Shutdown' 'poweroff' -B 'Lock & Suspend' 'betterlockscreen -s blur' -B 'Log Out' 'i3-msg exit' "
 
 
 #Batteryicon
@@ -251,4 +259,7 @@ client.background       $bg
 #exec --no-startup-id wal -R
 #exec_always --no-startup-id wal -i ~/Pictures/Backgrounds/wall.jpg -n
 #exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")" 
-exec_always --no-startup-id feh --bg-fill ~/Pictures/Backgrounds/wall.jpg
+exec_always --no-startup-id feh --bg-fill ~/.config/wall.jpg
+
+#Notifiactions
+exec --no-startup-id dunst
