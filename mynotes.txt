@@ -37,3 +37,9 @@ git push , git push origin master
 ------------------------------------------------------------
 To give the pasword in one command line only
 echo <password> | sudo -S <program name>
+
+#To list packages 
+pacman -Qe
+
+#Convert images to pdf in sorted way 
+ls *.jpg | sort -n | tr '\n' ' ' | sed 's/$/\ mydoc.pdf/' | xargs convert

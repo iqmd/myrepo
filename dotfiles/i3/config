@@ -10,7 +10,7 @@
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
-set $term kitty 
+set $term termite
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -18,7 +18,7 @@ set $term kitty
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 8
+font pango:DejaVu Sans Mono 11
 
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -36,7 +36,7 @@ bindsym $mod+Return exec $term
 # kill focused window
 bindsym $mod+Shift+q kill
 # start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id dmenu_run
+bindsym $mod+d exec --no-startup-id dmenu_run -nb "$fg" -nf "$bg" -sb "$bg" -sf "$fg"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
@@ -165,12 +165,10 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 #bar {
-#        status_command i3status
+#	status_command i3blocks
 #}
-
 #MyChanges------------++++++++++++++--------------------------------------
 
-#Wallpaper
 
 
 #Polybar
@@ -179,14 +177,14 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 #Xresources
 
-exec_always --no-startup-id xrdb -merge ~/.Xresources
+exec_always --no-startup-id xrdb  ~/.Xresources
 #nm-applet
 
 exec --no-startup-id nm-applet
 
 #Gaps
 
-gaps inner 15 
+gaps inner 1
 
 #Borders
 
@@ -196,11 +194,11 @@ default_floating_border pixel 0
 #Screen Configuration
 
 #Brightness
-bindsym XF86MonBrightnessDown	exec --no-startup-id light -U 5
+bindsym XF86MonBrightnessDown	exec --no-startup-id light -U 2
 bindsym XF86MonBrightnessUp	exec --no-startup-id light -A 5
 exec_always --no-startup-id xrandr --output eDP-1 --gamma 0.7:0.8:0.8
 
-#Compton 
+#Compton
 
 exec --no-startup-id compton --backend glx --blur-method kawase --blur-strength 10 --config ~/.config/compton/compton.conf
 #Screenshot
@@ -234,9 +232,10 @@ exec --no-startup-id cbatticon -c "poweroff" -l 15 -r 3
 bindsym $mod+Shift+f exec --no-startup-id firefox
 #Ranger
 bindsym $mod+Shift+Return exec $term -e  ranger
- 
- 
- 
+#Vim Editor
+bindsym $mod+Shift+v exec $term -e vim
+
+
 
 ###--- i3 coloring ---###
 # Make it clear when failed using red - otherwise set i3 colors with wal from xresources
@@ -258,8 +257,15 @@ client.background       $bg
 #Pywal
 #exec --no-startup-id wal -R
 #exec_always --no-startup-id wal -i ~/Pictures/Backgrounds/wall.jpg -n
-#exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")" 
+#exec_always --no-startup-id feh --bg-fill  "$(< "${HOME}/.cache/wal/wal")"
 exec_always --no-startup-id feh --bg-fill ~/.config/wall.jpg
 
 #Notifiactions
 exec --no-startup-id dunst
+
+new_window normal
+for_window [class="^.*"] border pixel 1
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
