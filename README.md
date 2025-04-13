@@ -1,2 +1,2 @@
 # myrepo
-Here are my dotfiles . Still developing..
+Here are my dotfiles.
