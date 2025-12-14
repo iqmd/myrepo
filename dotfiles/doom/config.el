@@ -40,7 +40,7 @@
 ;;
 
 ;; in ~/.doom.d/config.el
-(setq doom-theme 'doom-monokai-spectrum)
+(setq doom-theme 'doom-gruvbox)
 
 (custom-set-faces!
   '(default :background "#181818")
@@ -68,9 +68,14 @@
 (map!
  ;; press v multiple time to expand region
  :v "v" #'er/expand-region
+ ;; 
  ;; :n "=" #'my-indent-line
  )
-
+;; (map! :leader
+;;       (:prefix-map ("a" . "applications")
+;;        (:prefix ("j" . "journal")
+;;         :desc "New journal entry" "j" #'org-journal-new-entry
+;;         :desc "Search journal entry" "s" #'org-journal-search)))
  ;; (setq-default indent-tabs-mode nil
  ;;               tab-width 4)
 
@@ -91,26 +96,229 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
+(after! org
+  (setq org-capture-templates
+       '(("t" "Personal todo" entry (file+headline +org-capture-todo-file "Inbox")
+          "* [ ] %?\n%i\n" :prepend t)
+         ("n" "Personal notes" entry (file+headline +org-capture-notes-file "Inbox")
+          "* %u %?\n%i\n" :prepend t)
+         ("j" "Journal" entry (file+olp+datetree +org-capture-journal-file)
+          "* %U %?\n%i\n" :prepend t)
+         ("p" "Templates for projects")
+         ("pt" "Project-local todo" entry
+          (file+headline +org-capture-project-todo-file "Inbox") "* TODO %?\n%i\n"
+          :prepend t)
+         ("pn" "Project-local notes" entry
+          (file+headline +org-capture-project-notes-file "Inbox") "* %U %?\n%i\n%a"
+          :prepend t)
+         ("pc" "Project-local changelog" entry
+          (file+headline +org-capture-project-changelog-file "Unreleased")
+          "* %U %?\n%i\n%a" :prepend t)
+         ("o" "Centralized templates for projects")
+         ("ot" "Project todo" entry #'+org-capture-central-project-todo-file
+          "* TODO %?\n %i\n %a" :heading "Tasks" :prepend nil)
+         ("on" "Project notes" entry #'+org-capture-central-project-notes-file
+          "* %U %?\n %i\n %a" :heading "Notes" :prepend t)
+         ("oc" "Project changelog" entry #'+org-capture-central-project-changelog-file
+          "* %U %?\n %i\n %a" :heading "Changelog" :prepend t)))
+  (setq org-agenda-files
+        '("~/roam")))
+(after! org
+  (map! :leader
+        (:prefix ("n" . "notes")
+         :desc "Open org directory"
+         "d" (cmd! (dired org-directory))
 
- (use-package org-roam
+         :desc "Search inside org notes"
+         "s" (cmd! (consult-ripgrep org-directory)))))
+ ;; (use-package org-roam
+ ;;   :ensure t
+ ;;   :custom
+ ;;   (org-roam-directory (file-truename "~/roam/"))
+ ;;   (org-roam-capture-templates
+ ;;    '(("d" "default" plain
+ ;;       "%?"
+ ;;       :if-new (file+head "${slug}.org" "#+title: ${title}\n")
+ ;;       :unnarrowed t)))
+ ;;   :config
+ ;;   (org-roam-db-autosync-enable)
+ ;;   )
+
+(use-package consult-org-roam
    :ensure t
+   :after org-roam
+   :init
+   (require 'consult-org-roam)
+   ;; Activate the minor mode
+   (consult-org-roam-mode 1)
    :custom
-   (org-roam-directory (file-truename "~/roam/"))
-   (org-roam-capture-templates
-    '(("d" "default" plain
-       "%?"
-       :if-new (file+head "${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)))
+   ;; Use `ripgrep' for searching with `consult-org-roam-search'
+   (consult-org-roam-grep-func #'consult-ripgrep)
+   ;; Configure a custom narrow key for `consult-buffer'
+   (consult-org-roam-buffer-narrow-key ?r)
+   ;; Display org-roam buffers right after non-org-roam buffers
+   ;; in consult-buffer (and not down at the bottom)
+   (consult-org-roam-buffer-after-buffers nil)
    :config
-   )
+   ;; Eventually suppress previewing for certain functions
+   (consult-customize
+    consult-org-roam-forward-links
+    :preview-key "M-."
+    consult-org-roam-search
+    :preview-key nil
+    )
+   :bind
+   ;; Define some convenient keybindings as an addition
+   ("C-c n e" . consult-org-roam-file-find)
+   ("C-c n b" . consult-org-roam-backlinks)
+   ("C-c n B" . consult-org-roam-backlinks-recursive)
+   ("C-c n l" . consult-org-roam-forward-links)
+   ("C-c n r" . consult-org-roam-search))
+
+(use-package org-roam
+  :ensure t
+  :custom
+  (org-roam-directory (file-truename "~/roam/"))
+  :config
+  ;; If you're using a vertical completion framework, you might want a more informative completion interface
+  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (setq org-roam-dailies-directory "journal")
+  (org-roam-db-autosync-mode)
+  ;; If using org-roam-protocol
+  (require 'org-roam-protocol))
 
 ;;smartparens
 (sp-local-pair '(c++-mode) "<" ">" :unless '(sp-point-after-word-p))
 
-;;
-;;use-package! rainbow-mode
+(use-package! diff-hl
+  :config
+  (custom-set-faces!
+    `((diff-hl-change)
+      :foreground ,(doom-blend (doom-color 'bg) (doom-color 'blue) 0.5))
+    `((diff-hl-insert)
+      :foreground ,(doom-blend (doom-color 'bg) (doom-color 'green) 0.5)))
+  )
 
-;; Whenever you reconfigure a package, make sure to wrap your config in an
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :custom
+  (doom-modeline-height 25)
+  (doom-modeline-bar-width 1)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-buffer-file-name-style 'file-name-with-project)
+  (doom-modeline-buffer-state-icon t)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-enable-word-count nil)
+  (doom-modeline-buffer-encoding t)
+  (doom-modeline-indent-info nil)
+  (doom-modeline-checker-simple-format t)
+  (doom-modeline-vcs-max-length 12)
+  (doom-modeline-env-version t)
+  (doom-modeline-irc-stylize 'identity)
+  (doom-modeline-github-timer nil)
+  (doom-modeline-gnus-timer nil)
+  (doom-modeline-always-show-macro-register t)
+  :config
+  (setq doom-modeline-persp-name t)
+  )
+
+(add-to-list 'evil-emacs-state-modes 'magit-mode)
+;;
+;; Load custom Evil clipboard-bypass functions
+(load! "extras/evil-clipboard-bypass.el")
+
+;; (defmacro without-evil-mode (&rest do-this)
+;;   ;; Check if evil-mode is on, and disable it temporarily
+;;   `(let ((evil-mode-is-on (evil-mode?)))
+;;      (if evil-mode-is-on
+;;          (disable-evil-mode))
+;;      (ignore-errors
+;;        ,@do-this)
+;;      (if evil-mode-is-on
+;;          (enable-evil-mode))))
+
+;; (defmacro evil-mode? ()
+;;   "Checks if evil-mode is active. Uses Evil's state to check."
+;;   `evil-state)
+
+;; (defmacro disable-evil-mode ()
+;;   "Disable evil-mode with visual cues."
+;;   `(progn
+;;      (evil-mode 0)
+;;      (message "Evil mode disabled")))
+
+;; (defmacro enable-evil-mode ()
+;;   "Enable evil-mode with visual cues."
+;;   `(progn
+;;      (evil-mode 1)
+;;      (message "Evil mode enabled")))
+
+;; ;;;; Clipboard bypass
+
+;; ;; delete: char
+;; (evil-define-operator evil-destroy-char (beg end type register yank-handler)
+;;   :motion evil-forward-char
+;;   (evil-delete-char beg end type ?_))
+
+;; ;; delete: char (backwards)
+;; (evil-define-operator evil-destroy-backward-char (beg end type register yank-handler)
+;;   :motion evil-forward-char
+;;   (evil-delete-backward-char beg end type ?_))
+
+;; ;; delete: text object
+;; (evil-define-operator evil-destroy (beg end type register yank-handler)
+;;   "Vim's 's' without clipboard."
+;;   (evil-delete beg end type ?_ yank-handler))
+
+;; ;; delete: to end of line
+;; (evil-define-operator evil-destroy-line (beg end type register yank-handler)
+;;   :motion nil
+;;   :keep-visual t
+;;   (interactive "<R><x>")
+;;   (evil-delete-line beg end type ?_ yank-handler))
+
+;; ;; delete: whole line
+;; (evil-define-operator evil-destroy-whole-line (beg end type register yank-handler)
+;;   :motion evil-line
+;;   (interactive "<R><x>")
+;;   (evil-delete-whole-line beg end type ?_ yank-handler))
+
+;; ;; change: text object
+;; (evil-define-operator evil-destroy-change (beg end type register yank-handler delete-func)
+;;   (evil-change beg end type ?_ yank-handler delete-func))
+
+;; ;; paste: before
+;; (defun evil-destroy-paste-before ()
+;;   (interactive)
+;;   (without-evil-mode
+;;      (delete-region (point) (mark))
+;;      (evil-paste-before 1)))
+
+;; ;; paste: after
+;; (defun evil-destroy-paste-after ()
+;;   (interactive)
+;;   (without-evil-mode
+;;      (delete-region (point) (mark))
+;;      (evil-paste-after 1)))
+
+;; ;; paste: text object
+;; (evil-define-operator evil-destroy-replace (beg end type register yank-handler)
+;;   (evil-destroy beg end type register yank-handler)
+;;   (evil-paste-before 1 register))
+;; ;; Clipboard bypass key rebindings
+;; (define-key evil-normal-state-map "d" 'evil-destroy)
+;; (define-key evil-normal-state-map "D" 'evil-destroy-line)
+;; (define-key evil-normal-state-map "c" 'evil-destroy-change)
+;; (define-key evil-normal-state-map "x" 'evil-destroy-char)
+;; (define-key evil-normal-state-map "X" 'evil-destroy-whole-line)
+;; (define-key evil-normal-state-map "Y" 'evil-copy-to-end-of-line)
+;; (define-key evil-visual-state-map "P" 'evil-destroy-paste-before)
+;; (define-key evil-visual-state-map "p" 'evil-destroy-paste-after)
+
+;;
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
 ;;   (after! PACKAGE
@@ -143,3 +351,4 @@
 ;; they are implemented.
 ;; NOTE
 ;; - Use `M-x rainbow-mode' to enable color behind the hex code
+
